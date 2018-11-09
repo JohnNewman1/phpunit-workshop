@@ -12,4 +12,12 @@ class CustomerController extends Controller
         $customer = Customer::create($request->all());
         return $customer;
     }
+
+    public function delete(Request $request, Customer $customer)
+    {
+        $customer->delete();
+        return [
+            'success' => true
+        ];
+    }
 }

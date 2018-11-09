@@ -31,4 +31,64 @@ class CustomerControllerTest extends TestCase
             'occupation' => 'Delivery Man',
         ]);
     }
+
+    public function testCustomerControllerCanUpdateCustomer()
+    {
+        $customer = factory(\App\Customer::class)->create([
+            'first_name' => 'Santa',
+            'last_name' => 'Clause',
+            'occupation' => 'Delivery Man',
+        ]);
+
+        $attributes = [
+            'first_name' => 'Tooth',
+            'last_name' => 'Fairy',
+            'occupation' => 'Tooth Theif',
+        ];
+
+        $response = $this->json('patch', 'api/customers/' . $customer->id, $attributes);
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'first_name' => 'Tooth',
+                'last_name' => 'Fairy',
+                'occupation' => 'Tooth Theif',
+            ]);
+
+        $this->assertDatabaseMissing('customers', [
+            'id' => $customer->id,
+            'first_name' => 'Santa',
+            'last_name' => 'Clause',
+            'occupation' => 'Delivery Man',
+        ]);
+
+        $this->assertDatabaseHas('customers', [
+            'id' => $customer->id,
+            'first_name' => 'Tooth',
+            'last_name' => 'Fairy',
+            'occupation' => 'Tooth Theif',
+        ]);
+    }
+
+    public function testCustomerControllerCanDeleteCustomer()
+    {
+        $customer = factory(\App\Customer::class)->create([
+            'first_name' => 'Santa',
+            'last_name' => 'Clause',
+            'occupation' => 'Delivery Man',
+        ]);
+
+        $response = $this->json('delete', 'api/customers/' . $customer->id);
+
+        $response
+            ->assertStatus(200);
+
+        $this->assertDatabaseMissing('customers', [
+            'id' => $customer->id,
+            'first_name' => 'Santa',
+            'last_name' => 'Clause',
+            'occupation' => 'Delivery Man',
+        ]);
+    }
 }
