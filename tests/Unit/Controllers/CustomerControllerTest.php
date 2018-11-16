@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Repositories\CustomerService;
 
 class CustomerControllerTest extends TestCase
 {
@@ -34,6 +35,7 @@ class CustomerControllerTest extends TestCase
 
     public function testCustomerControllerCanUpdateCustomer()
     {
+        // NOTE: BUILD LOGIC TO MAKE PASS.
         $customer = factory(\App\Customer::class)->create([
             'first_name' => 'Santa',
             'last_name' => 'Clause',
@@ -73,6 +75,7 @@ class CustomerControllerTest extends TestCase
 
     public function testCustomerControllerCanDeleteCustomer()
     {
+        // NOTE: FIX THIS TEST.
         $customer = factory(\App\Customer::class)->create([
             'first_name' => 'Santa',
             'last_name' => 'Clause',
@@ -91,4 +94,57 @@ class CustomerControllerTest extends TestCase
             'occupation' => 'Delivery Man',
         ]);
     }
+
+    public function testCustomerControllerCanSuspendACustomer()
+    {
+        $customer = factory(\App\Customer::class)->create([
+            'first_name' => 'Santa',
+            'last_name' => 'Clause',
+            'occupation' => 'Delivery Man',
+            'is_active' => true
+        ]);
+
+        $customerRepo = \Mockery::mock(CustomerService::class);
+        $this->app->instance(CustomerService::class, $customerRepo);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Mockery On
+        |--------------------------------------------------------------------------
+        |
+        |When we need to do a more complex argument matching for an expected method call,
+        |the \Mockery::on() matcher comes in really handy.
+        |It accepts a closure as an argument and that closure in turn receives the argument passed in to the method,
+        |when called. If the closure returns true, Mockery will consider that the argument has passed the expectation.
+        |If the closure returns false, or a “falsey” value, the expectation will not pass.
+        |
+        */
+
+        $customerRepo
+            ->expects()
+            ->suspend(
+                \Mockery::on(
+                    function ($arg) use ($customer) {
+                        return $arg->id == $customer->id;
+                    }
+                )
+            )
+            ->once();
+
+        $response = $this->json('post', 'api/customers/' . $customer->id . '/suspend');
+        $response
+            ->assertStatus(200);
+
+        $this->assertDatabaseHas('customers', [
+            'first_name' => 'Santa',
+            'last_name' => 'Clause',
+            'occupation' => 'Delivery Man',
+            'is_active' => false
+        ]);
+    }
+
+    // NOTE: BONUS POINTS IF YOU WRITE THIS TEST AND MAKE IT PASS!
+    // public function testCustomerControllerCanActivateACustomer()
+    // {
+    // }
 }
