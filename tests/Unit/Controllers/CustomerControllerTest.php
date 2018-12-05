@@ -3,8 +3,8 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
+use App\Services\CustomerService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Repositories\CustomerService;
 
 class CustomerControllerTest extends TestCase
 {
@@ -107,31 +107,12 @@ class CustomerControllerTest extends TestCase
         $customerRepo = \Mockery::mock(CustomerService::class);
         $this->app->instance(CustomerService::class, $customerRepo);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Mockery On
-        |--------------------------------------------------------------------------
-        |
-        |When we need to do a more complex argument matching for an expected method call,
-        |the \Mockery::on() matcher comes in really handy.
-        |It accepts a closure as an argument and that closure in turn receives the argument passed in to the method,
-        |when called. If the closure returns true, Mockery will consider that the argument has passed the expectation.
-        |If the closure returns false, or a “falsey” value, the expectation will not pass.
-        |
-        */
-
         $customerRepo
-            ->expects()
-            ->suspend(
-                \Mockery::on(
-                    function ($arg) use ($customer) {
-                        return $arg->id == $customer->id;
-                    }
-                )
-            )
+            ->shouldReceive('suspend')
             ->once();
 
         $response = $this->json('post', 'api/customers/' . $customer->id . '/suspend');
+        
         $response
             ->assertStatus(200);
 
@@ -147,4 +128,30 @@ class CustomerControllerTest extends TestCase
     // public function testCustomerControllerCanActivateACustomer()
     // {
     // }
+
+
+    // NOTE: IGNORE THE BELOW CODE, I WILL TALK TO YOU ABOUT IT AT THE END OF THE WORKSHOP
+    /*
+   //     |--------------------------------------------------------------------------
+   //     | Mockery On
+   //     |--------------------------------------------------------------------------
+   //     |
+   //     |When we need to do a more complex argument matching for an expected method call,
+   //     |the \Mockery::on() matcher comes in really handy.
+   //     |It accepts a closure as an argument and that closure in turn receives the argument passed in to the method,
+   //     |when called. If the closure returns true, Mockery will consider that the argument has passed the expectation.
+   //     |If the closure returns false, or a “falsey” value, the expectation will not pass.
+   //     |
+   //     */
+   //
+   //     $customerRepo
+   //         ->expects()
+   //         ->suspend(
+   //             \Mockery::on(
+   //                 function ($arg) use ($customer) {
+   //                     return $arg->id == $customer->id;
+   //                 }
+   //             )
+   //         )
+   //         ->once();
 }

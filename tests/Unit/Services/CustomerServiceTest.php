@@ -6,8 +6,8 @@ use Tests\TestCase;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use App\Services\CustomerService;
 use GuzzleHttp\Handler\MockHandler;
-use App\Repositories\CustomerService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CustomerServiceTest extends TestCase
@@ -30,7 +30,7 @@ class CustomerServiceTest extends TestCase
         $handler = HandlerStack::create($mockResponse);
         $client = new Client(['handler' => $handler]);
 
-        $repo = new CustomerService($client);
+        $service = new CustomerService($client);
 
         $customer = factory(\App\Customer::class)->create([
             'first_name' => 'Action',
@@ -39,7 +39,7 @@ class CustomerServiceTest extends TestCase
             'is_active' => false
         ]);
 
-        $response = $repo->suspend($customer);
+        $response = $service->suspend($customer);
 
         $this->assertEquals($body['message'], json_decode($response, true)['message']);
     }
