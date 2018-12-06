@@ -4,23 +4,37 @@ namespace App\Services;
 
 use App\Customer;
 use App\Services\EmailService;
+use App\Services\LetterService;
 
 class CommunicationService
 {
-    private $emailer;
+    private $emailService;
+    private $letterService;
 
-    public function __construct(EmailService $emailer)
+    public function __construct(EmailService $emailService, LetterService $letterService)
     {
-        $this->emailer = $emailer;
+        $this->emailService = $emailService;
+        $this->letterService = $letterService;
     }
 
-    public function email(Customer $customer, string $message)
+    public function sendEmail(Customer $customer, string $message)
     {
         $email = $customer->getEmail();
+        $email = $customer->getEmail();
 
-        $this->emailer->send([
+        $this->emailService->send([
             'to' => $email,
             'message' => $message
         ]);
     }
+
+    // public function sendLetter(Customer $customer, string $message)
+    // {
+    //     $address = $customer->getAddress();
+    //
+    //     $this->letterService->addAddress($address);
+    //     $this->letterService->addMessage($message);
+    //
+    //     $this->letterService->send();
+    // }
 }
