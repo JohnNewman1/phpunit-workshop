@@ -18,7 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['prefix' => 'customers'], function () {
-    Route::post('/', 'CustomerController@create');
+    // Route::post('/', 'CustomerController@create');
     Route::post('/{customer}/suspend', 'CustomerController@suspend');
     Route::post('/{customer}', 'CustomerController@delete');
 });

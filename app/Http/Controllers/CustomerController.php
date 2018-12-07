@@ -14,11 +14,11 @@ class CustomerController extends Controller
     {
         $this->repo = $repo;
     }
-    public function create(Request $request)
-    {
-        $customer = Customer::create($request->all());
-        return $customer;
-    }
+    // public function create(Request $request)
+    // {
+    // $customer = Customer::create($request->all());
+    //     return $customer;
+    // }
 
     public function delete(Request $request, Customer $customer)
     {
